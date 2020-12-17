@@ -69,6 +69,13 @@ func check(e error) {
 	}
 }
 
+func getDefaultFileName() string {
+	currentDate := time.Now().Local()
+	fileName := fmt.Sprintf("%d%d%d.md", currentDate.Day(), currentDate.Month(), currentDate.Year())
+
+	return fileName
+}
+
 func main() {
 	defer func() {
 		if r := recover(); r != nil {
@@ -76,9 +83,14 @@ func main() {
 		}
 	}()
 
-	currentDate := time.Now().Local()
-	fileName := fmt.Sprintf("%d%d%d.md", currentDate.Day(), currentDate.Month(), currentDate.Year())
+	var fileName string
+	if len(os.Args) <= 1 {
+		fileName = getDefaultFileName()
+	} else {
+		fileName = os.Args[1]
+	}
 	path := getOrCreateFilePath("", fileName)
+
 	cmd := exec.Command("nvim", path)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
